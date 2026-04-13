@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Bharat Path - Central Dashboard</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- TailwindCSS for quick styling mirroring original layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        skylight: '#B8C6DB',
+                        darkblue: '#051E2B',
+                        grey: '#505050',
+                        skyblue: '#007ACC',
+                        lightgrey: '#FAFAFA',
+                        blackdark: '#1A1A1Aee',
+                        parrot: '#8EBA00',
+                        lightwhite: '#FFFFFF',
+                    },
+                    fontFamily: {
+                        sans: ['"Open Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .bg-lightsky {
+            background-color: var(--tw-colors-skylight);
+            color: var(--tw-colors-darkblue);
+            font-size: 0.75rem;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .bg-lightsky:hover {
+            border: 1px solid var(--tw-colors-darkblue);
+        }
+
+        .marquee-text a {
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(75deg, hsl(240deg 70% 49%) 0%, hsl(253deg 70% 49%) 11%, hsl(267deg 70% 49%) 22%, hsl(280deg 71% 48%) 33%, hsl(293deg 71% 48%) 44%, hsl(307deg 71% 48%) 56%, hsl(320deg 71% 48%) 67%, hsl(333deg 72% 48%) 78%, hsl(347deg 72% 48%) 89%, hsl(0deg 73% 47%) 100%);
+            font-size: 16px;
+            font-weight: 900;
+            line-height: 1;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .login-bg {
+            min-height: calc(100vh - 100px);
+            /* Reduced from 120px to pull footer up */
+            position: relative;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('images/hero_bg.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            /* Prevent background scroll if any */
+        }
+
+        /* Fading image overlay simulation */
+        .banner-overlay {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+
+        .box-leftbox {
+            border-top: 5px solid theme('colors.skyblue');
+            box-shadow: 0px 3px 25px #00000029;
+        }
+
+        .box-notification {
+            background: rgba(2, 12, 18, 0.96);
+            /* Hardened background for better readability */
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-left: 6px solid theme('colors.parrot');
+            color: white;
+            width: 480px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7);
+            border-radius: 12px 0 0 12px;
+            padding: 24px;
+            z-index: 50;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @media (min-width: 1024px) {
+            .box-notification {
+                position: absolute;
+                right: 0px;
+                /* Absolute right edge */
+                top: 0px;
+                /* Pull to the absolute top */
+            }
+        }
+
+
+        .box-notification .text-white {
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 1);
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .footer-bgskyblue {
+            background: linear-gradient(90deg, #007ACC, #005a99);
+            color: white;
+            width: 100%;
+            padding: 8px 40px;
+            z-index: 10;
+            margin-top: auto;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+        }
+
+        /* --- CHATBOT STYLES --- */
+        #chatbot-fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #007ACC, #005a99);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #chatbot-fab:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        #chatbot-panel {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 380px;
+            height: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #chatbot-panel.open {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .cb-header {
+            background: linear-gradient(135deg, #051E2B, #0a3d58);
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .cb-avatar {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .cb-header-info h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .cb-header-info p {
+            font-size: 12px;
+            margin: 0;
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .cb-online-dot {
+            width: 8px;
+            height: 8px;
+            background: #2ecc71;
+            border-radius: 50%;
+        }
+
+        .cb-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: 0.2s;
+        }
+
+        .cb-close:hover {
+            opacity: 1;
+        }
+
+        #cb-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .cb-bubble {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cb-bubble.bot {
+            align-self: flex-start;
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .cb-bubble.user {
+            align-self: flex-end;
+            background: #007ACC;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .cb-bubble.bot b {
+            color: #007ACC;
+        }
+
+        #cb-chips {
+            padding: 10px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+
+        .cb-chip {
+            background: #f0f2f5;
+            border: 1px solid #e0e0e0;
+            color: #007ACC;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cb-chip:hover {
+            background: #007ACC;
+            color: white;
+            border-color: #007ACC;
+        }
+
+        #cb-input-row {
+            padding: 15px 20px;
+            background: white;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border-top: 1px solid #eee;
+        }
+
+        #cb-input {
+            flex-grow: 1;
+            background: #f0f2f5;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            padding: 8px 14px;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #cb-input:focus {
+            border-color: #007ACC;
+        }
+
+        #cb-send {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007ACC, #005a99);
+            color: white;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.15s;
+        }
+
+        #cb-send:hover {
+            transform: scale(1.1);
+        }
+
+        .cb-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Custom Scrollbar for lists */
+        .notification-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .notification-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .notification-list::-webkit-scrollbar-thumb {
+            background: theme('colors.parrot');
+            border-radius: 0px;
+        }
+
+        /* Tabs styling */
+        .nav-tabs button {
+            color: theme('colors.lightwhite');
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            border: none;
+            background: transparent;
+            padding-bottom: 8px;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .nav-tabs button.active {
+            color: theme('colors.parrot');
+        }
+
+        .nav-tabs button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 30px;
+            height: 4px;
+            background-color: theme('colors.parrot');
+            border-radius: 3px;
+            transition: all 0.4s linear;
+        }
+
+        /* Animation class for count */
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .count-animate {
+            animation: countUp 1s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeIn 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        }
+
+        /* Better interactivity */
+        button,
+        a {
+            cursor: pointer;
+        }
+
+        .tab-btn:hover {
+            color: theme('colors.skyblue');
+            transition: color 0.3s;
+        }
+
+        header a:hover {
+            color: theme('colors.skyblue');
+            transition: all 0.2s;
+        }
+
+        .box-notification {
+            transition: box-shadow 0.3s ease;
+        }
+
+        .box-notification:hover {
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
+        }
+
+        input:focus,
+        select:focus {
+            border-color: theme('colors.skyblue');
+            box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.2);
+        }
+
+        /* Multilingual Support Styles */
+        [data-page-lang] {
+            display: none !important;
+        }
+
+        [data-page-lang].show-lang {
+            display: inline-block !important;
+        }
+
+        div[data-page-lang].show-lang,
+        section[data-page-lang].show-lang,
+        h4[data-page-lang].show-lang,
+        h5[data-page-lang].show-lang,
+        p[data-page-lang].show-lang {
+            display: block !important;
+        }
+
+        .lang-select-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .lang-select-container:hover {
+            border-color: #007ACC;
+            box-shadow: 0 2px 10px rgba(0, 122, 204, 0.1);
+        }
+
+        .lang-select {
+            background: transparent;
+            border: none;
+            font-size: 11px;
+            font-weight: 700;
+            color: #1e293b;
+            cursor: pointer;
+            outline: none;
+            text-transform: uppercase;
+            padding-right: 4px;
+        }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+    <!-- Header Area -->
+    <header class="pt-1.5 pb-0 px-4 md:px-8 bg-white border-b shadow-sm relative z-20">
+        <div class="flex flex-col md:flex-row items-center w-full justify-between gap-2">
+            <!-- Logo -->
+            <div class="flex items-center">
+                <img src="./images/bharat_path_logo.png" alt="Bharat Path Logo"
+                    class="w-[120px] md:w-[150px] object-contain">
+                <span class="ml-4 font-bold text-darkblue text-lg hidden lg:block">
+                    <span data-page-lang="en" class="show-lang">Bharat Path Portal</span>
+                    <span data-page-lang="hi">भारत पथ पोर्टल</span>
+                    <span data-page-lang="mr">भारत पथ पोर्टल</span>
+                </span>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-end gap-2 text-sm">
+                <!-- Weather Icon -->
+                <a href="#" class="rounded-full shadow-md overflow-hidden bg-white hover:scale-105 transition-transform"
+                    title="District wise weather updates">
+                    <img src="https://datalakeg.nhai.gov.in/nhai/image/weather.png"
+                        class="w-[50px] md:w-[70px] bg-white object-contain p-1" alt="Weather">
+                </a>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const weatherA = document.querySelector('a[title="District wise weather updates"]');
+                        const weatherImg = weatherA.querySelector('img');
+                        const titles = {
+                            en: "District wise weather updates",
+                            hi: "ज़िलावार मौसम अपडेट",
+                            mr: "जिल्हावार हवामान अपडेट"
+                        };
+                        const altTexts = {
+                            en: "Weather",
+                            hi: "मौसम",
+                            mr: "हवामान"
+                        };
+                        const oldSwitch = window.switchPageLanguage;
+                        window.switchPageLanguage = function (lang) {
+                            if (oldSwitch) oldSwitch(lang);
+                            if (titles[lang]) weatherA.title = titles[lang];
+                            if (altTexts[lang]) weatherImg.alt = altTexts[lang];
+                        };
+                    });
+                </script>
+
+                <!-- Links & Dropdowns -->
+                <div class="relative group">
+                    <button class="bg-lightsky px-4 py-2 rounded uppercase text-xs">
+                        <span data-page-lang="en" class="show-lang">Bharatpath Training Video <i
+                                class="fas fa-caret-down ml-1"></i></span>
+                        <span data-page-lang="hi">भारतपथ प्रशिक्षण वीडियो <i class="fas fa-caret-down ml-1"></i></span>
+                        <span data-page-lang="mr">भारतपथ प्रशिक्षण व्हिडिओ <i class="fas fa-caret-down ml-1"></i></span>
+                    </button>
+                    <!-- Simulated Dropdown -->
+                    <ul
+                        class="absolute top-full right-0 bg-white shadow-lg border mt-1 hidden group-hover:block list-none w-64 z-50 rounded">
+                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700 border-b">
+                                <span data-page-lang="en" class="show-lang">GM/CGM Headquarters</span>
+                                <span data-page-lang="hi">जीएम/सीजीएम मुख्यालय</span>
+                                <span data-page-lang="mr">GM/CGM मुख्यालय</span>
+                            </a></li>
+                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700 border-b">
+                                <span data-page-lang="en" class="show-lang">Regional Office (RO)</span>
+                                <span data-page-lang="hi">क्षेत्रीय कार्यालय (आरओ)</span>
+                                <span data-page-lang="mr">प्रादेशिक कार्यालय (RO)</span>
+                            </a></li>
+                        <li><a href="info.html?target=training" class="block px-4 py-2 hover:bg-gray-100">
+                                <span data-page-lang="en" class="show-lang">Training Videos</span>
+                                <span data-page-lang="hi">प्रशिक्षण वीडियो</span>
+                                <span data-page-lang="mr">प्रशिक्षण व्हिडिओ</span>
+                            </a></li>
+                        <li><a href="info.html?target=training" class="block px-4 py-2 hover:bg-gray-100">
+                                <span data-page-lang="en" class="show-lang">User Manuals</span>
+                                <span data-page-lang="hi">उपयोगकर्ता नियमावली</span>
+                                <span data-page-lang="mr">वापरकर्ता नियमावली</span>
+                            </a></li>
+                        <li><a href="#" class="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700">
+                                <span data-page-lang="en" class="show-lang">Project Director (PD/PIU)</span>
+                                <span data-page-lang="hi">परियोजना निदेशक (पीडी/पीआईयू)</span>
+                                <span data-page-lang="mr">प्रकल्प संचालक (PD/PIU)</span>
+                            </a></li>
+                    </ul>
+                </div>
+
+                <a href="info.html?target=complaints"
+                    class="bg-lightsky px-4 py-2 rounded uppercase text-xs text-center border border-transparent">
+                    <span data-page-lang="en" class="show-lang">Complaint Redressal Rajmargyatra App</span>
+                    <span data-page-lang="hi">शिकायत निवारण राजमार्गयात्रा ऐप</span>
+                    <span data-page-lang="mr">तक्रार निवारण राजमार्गयात्रा ॲप</span>
+                </a>
+                <a href="info.html?target=payments"
+                    class="bg-lightsky px-4 py-2 rounded uppercase text-xs text-center border border-transparent">
+                    <span data-page-lang="en" class="show-lang">Claim Outstanding Payments</span>
+                    <span data-page-lang="hi">बकाया भुगतान का दावा</span>
+                    <span data-page-lang="mr">थकीत देयकांचा दावा करा</span>
+                </a>
+                <a href="info.html?target=permissions"
+                    class="bg-lightsky px-4 py-2 rounded uppercase text-xs text-center border border-transparent">
+                    <span data-page-lang="en" class="show-lang">Access and Utility Permissions Along NHs.</span>
+                    <span data-page-lang="hi">एनएच के साथ पहुंच और उपयोगिता अनुमतियां।</span>
+                    <span data-page-lang="mr">एनएच च्या बाजूने प्रवेश आणि उपयुक्तता परवानग्या.</span>
+                </a>
+
+                <!-- Language Selector -->
+                <div class="lang-select-container ml-2">
+                    <i class="fas fa-globe text-blue-600 text-[10px]"></i>
+                    <select id="globalLangSelector" onchange="switchPageLanguage(this.value)" class="lang-select">
+                        <option value="en">English (US)</option>
+                        <option value="hi">हिन्दी (Hindi)</option>
+                        <option value="mr">मराठी (Marathi)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Marquee below header -->
+        <marquee onmouseover="this.stop();" onmouseout="this.start();" class="mt-0.5 mb-0.5 text-center block w-full">
+            <span class="marquee-text font-bold text-sm">
+                <i class="far fa-hand-point-right"></i>
+                <a href="info.html?target=about" class="hover:underline">
+                    <span data-page-lang="en" class="show-lang">What is Bharat Path ?</span>
+                    <span data-page-lang="hi">भारत पथ क्या है?</span>
+                    <span data-page-lang="mr">भारत पथ काय आहे?</span>
+                </a>
+            </span>
+        </marquee>
+    </header>
+
+    <!-- Main Section with Background -->
+    <section class="login-bg flex-grow">
+        <!-- Overlay if needed -->
+        <div class="banner-overlay w-full h-full"></div>
+
+        <!-- Content Overlay -->
+        <div
+            class="relative z-10 flex flex-col md:flex-row px-4 md:px-6 gap-6 items-start pt-0 xl:px-4 pb-4 justify-between">
+
+            <!-- Left Side Forms -->
+            <div class="flex flex-col z-10 w-full md:w-auto mt-0">
+                <h4 class="project-title bg-white text-skyblue text-lg font-semibold py-2 px-8 shadow-sm">
+                    <span data-page-lang="en" class="show-lang">Welcome to Bharat Path</span>
+                    <span data-page-lang="hi">भारत पथ में आपका स्वागत है</span>
+                    <span data-page-lang="mr">भारत पथ मध्ये आपले स्वागत आहे</span>
+                </h4>
+                <div
+                    class="box-leftbox bg-white w-full max-w-[340px] shadow-2xl flex flex-col relative z-20 fade-in-up">
+                    <h5 class="bg-lightgrey text-skyblue px-4 py-2 font-semibold mb-2 border-b border-gray-100">
+                        <span data-page-lang="en" class="show-lang">LOGIN</span>
+                        <span data-page-lang="hi">लॉगिन</span>
+                        <span data-page-lang="mr">लॉगिन</span>
+                    </h5>
+
+                    <div class="px-5 pb-5 flex flex-col gap-3">
+                        <select
+                            class="form-select w-full border border-gray-300 p-1.5 text-sm outline-none focus:border-skyblue">
+                            <option value="">Select Role</option>
+                            <option value="1">Chairperson/Member/OSD</option>
+                            <option value="2">HQ Technical Division</option>
+                            <option value="4">Regional Office</option>
+                            <option value="5">PIU</option>
+                            <option value="11" selected>Guest</option>
+                        </select>
+                        <script>
+                            // Handle localized select options via JS since standard HTML options are hard to wrap
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const roleSelect = document.querySelector('.form-select');
+                                const langMap = {
+                                    en: ["Select Role", "Chairperson/Member/OSD", "HQ Technical Division", "Regional Office", "PIU", "Guest"],
+                                    hi: ["भूमिका चुनें", "अध्यक्ष/सदस्य/ओएसडी", "मुख्यालय तकनीकी प्रभाग", "क्षेत्रीय कार्यालय", "पीआईयू", "अतिथि"],
+                                    mr: ["भूमिका निवडा", "अध्यक्ष/सदस्य/ओएसडी", "मुख्यालय तांत्रिक विभाग", "प्रादेशिक कार्यालय", "पीआईयू", "अतिथी"]
+                                };
+
+                                const originalSwitch = window.switchPageLanguage;
+                                window.switchPageLanguage = function (lang) {
+                                    originalSwitch(lang);
+                                    if (langMap[lang]) {
+                                        const options = roleSelect.options;
+                                        for (let i = 0; i < options.length; i++) {
+                                            options[i].text = langMap[lang][i];
+                                        }
+                                    }
+                                    // Update placeholders
+                                    const placeholders = {
+                                        en: { user: "Username", pass: "Password", captcha: "Enter Captcha*" },
+                                        hi: { user: "उपयोगकर्ता नाम", pass: "पासवर्ड", captcha: "कैप्चा दर्ज करें*" },
+                                        mr: { user: "वापरकर्तानाव", pass: "पासवर्ड", captcha: "कॅप्चा प्रविष्ट करा*" }
+                                    };
+                                    if (placeholders[lang]) {
+                                        document.getElementById('userName').placeholder = placeholders[lang].user;
+                                        document.getElementById('password').placeholder = placeholders[lang].pass;
+                                        document.getElementById('captchaInput').placeholder = placeholders[lang].captcha;
+                                    }
+                                };
+                            });
+                        </script>
+
+                        <input type="text" id="userName" placeholder="Username"
+                            class="w-full border border-gray-300 p-1.5 text-sm outline-none focus:border-skyblue">
+                        <input type="password" id="password" placeholder="Password"
+                            class="w-full border border-gray-300 p-1.5 text-sm outline-none focus:border-skyblue">
+
+                        <!-- Captcha Row -->
+                        <div class="flex items-center gap-2">
+                            <!-- Simulated Captcha Image/Canvas -->
+                            <div id="captchaDisplay"
+                                class="bg-blue-50 text-blue-800 font-bold italic w-28 h-10 flex items-center justify-center border border-gray-200 select-none shadow-inner"
+                                style="letter-spacing: 4px; font-family: 'Courier New', monospace; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">
+                                a7X9Kp
+                            </div>
+                            <div class="flex border border-gray-300 flex-grow">
+                                <input type="text" id="captchaInput" placeholder="Enter Captcha*"
+                                    class="w-full p-2 text-sm outline-none focus:border-skyblue border-r">
+                                <button type="button" onclick="refreshCaptcha()"
+                                    class="bg-gray-100 px-3 hover:bg-gray-200 text-gray-600 transition-all active:scale-95">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between text-xs text-gray-500 mt-1">
+                            <label class="flex items-center cursor-pointer hover:text-skyblue transition-colors">
+                                <input type="checkbox" class="mr-2 rounded">
+                                <span data-page-lang="en" class="show-lang">Remember me</span>
+                                <span data-page-lang="hi">मुझे याद रखें</span>
+                                <span data-page-lang="mr">मला लक्षात ठेवा</span>
+                            </label>
+                            <a href="javascript:void(0)" onclick="handleResetPassword()"
+                                class="text-skyblue font-semibold hover:underline">
+                                <span data-page-lang="en" class="show-lang">Reset Password?</span>
+                                <span data-page-lang="hi">पासवर्ड रीसेट करें?</span>
+                                <span data-page-lang="mr">पासवर्ड रीसेट करा?</span>
+                            </a>
+                        </div>
+
+                        <button type="button" onclick="handleLogin()"
+                            class="bg-skyblue text-white font-bold py-2 hover:bg-blue-600 transition-colors">
+                            <span data-page-lang="en" class="show-lang">SIGN IN</span>
+                            <span data-page-lang="hi">साइन इन करें</span>
+                            <span data-page-lang="mr">साइन इन करा</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side Notifications -->
+            <div
+                class="box-notification shadow-2xl z-10 p-4 rounded-sm flex flex-col relative w-full md:w-[480px] fade-in-up">
+
+                <!-- Nav Tabs -->
+                <div class="nav-tabs flex gap-4 border-b border-gray-600 pb-2 mb-4 relative">
+                    <button class="active tab-btn" onclick="switchTab('faqs')">
+                        <span data-page-lang="en" class="show-lang">FAQs & Support</span>
+                        <span data-page-lang="hi">एफएक्यू और समर्थन</span>
+                        <span data-page-lang="mr">FAQ आणि समर्थन</span>
+                    </button>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content relative flex-grow overflow-hidden">
+                    <!-- FAQs [DEFAULT] -->
+                    <div id="faqs" class="notification-list block max-h-[320px] overflow-y-auto pr-2 space-y-3">
+                        <div
+                            class="bg-gray-800 p-2 rounded-md hover:bg-gray-750 transition-colors border border-gray-700">
+                            <h6 class="text-skyblue text-sm font-bold">
+                                <span data-page-lang="en" class="show-lang">How do I reset my password?</span>
+                                <span data-page-lang="hi">मैं अपना पासवर्ड कैसे रीसेट करूं?</span>
+                                <span data-page-lang="mr">मी माझा पासवर्ड कसा रीसेट करू?</span>
+                            </h6>
+                            <p class="text-[11px] text-gray-300 mt-0.5">
+                                <span data-page-lang="en" class="show-lang">Use the 'Reset Password?' link on the login
+                                    panel or contact your RO/HQ administrator.</span>
+                                <span data-page-lang="hi">लॉगिन पैनल पर 'पासवर्ड रीसेट करें?' लिंक का उपयोग करें या अपने
+                                    आरओ/मुख्यालय प्रशासक से संपर्क करें।</span>
+                                <span data-page-lang="mr">लॉगिन पॅनेलवरील 'पासवर्ड रीसेट करा?' लिंक वापरा किंवा तुमच्या
+                                    RO/HQ प्रशासकाशी संपर्क साधा.</span>
+                            </p>
+                        </div>
+                        <div
+                            class="bg-gray-800 p-2 rounded-md hover:bg-gray-750 transition-colors border border-gray-700">
+                            <h6 class="text-skyblue text-sm font-bold">
+                                <span data-page-lang="en" class="show-lang">What is the deadline for monthly data
+                                    updates?</span>
+                                <span data-page-lang="hi">मासिक डेटा अपडेट के लिए समय सीमा क्या है?</span>
+                                <span data-page-lang="mr">मासिक डेटा अपडेटसाठी अंतिम मुदत काय आहे?</span>
+                            </h6>
+                            <p class="text-[11px] text-gray-300 mt-0.5">
+                                <span data-page-lang="en" class="show-lang">All updates must be completed by the 7th of
+                                    every month.</span>
+                                <span data-page-lang="hi">सभी अपडेट हर महीने की 7 तारीख तक पूरे होने चाहिए।</span>
+                                <span data-page-lang="mr">सर्व अपडेट प्रत्येक महिन्याच्या ७ तारखेपर्यंत पूर्ण करणे
+                                    आवश्यक आहे.</span>
+                            </p>
+                        </div>
+                        <div
+                            class="bg-gray-800 p-2 rounded-md hover:bg-gray-750 transition-colors border border-gray-700">
+                            <h6 class="text-skyblue text-sm font-bold">
+                                <span data-page-lang="en" class="show-lang">How can I track my payment claim?</span>
+                                <span data-page-lang="hi">मैं अपने भुगतान दावे को कैसे ट्रैक कर सकता हूं?</span>
+                                <span data-page-lang="mr">मी माझा पेमेंट क्लेम कसा ट्रॅक करू शकतो?</span>
+                            </h6>
+                            <p class="text-[11px] text-gray-300 mt-0.5">
+                                <span data-page-lang="en" class="show-lang">Visit the 'Claim Outstanding Payments'
+                                    section in the header navigation.</span>
+                                <span data-page-lang="hi">हेडर नेविगेशन में 'बकाया भुगतान का दावा' अनुभाग पर
+                                    जाएं।</span>
+                                <span data-page-lang="mr">हेडर नेव्हिगेशनमधील 'थकीत देयकांचा दावा करा' विभाग पहा.</span>
+                            </p>
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-600">
+                            <button onclick="showTicketForm()"
+                                class="bg-parrot hover:bg-green-600 text-darkblue font-bold py-3 px-4 rounded w-full flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg">
+                                <i class="fas fa-ticket-alt"></i>
+                                <span data-page-lang="en" class="show-lang">RAISE A SUPPORT TICKET</span>
+                                <span data-page-lang="hi">सपोर्ट टिकट उठाएं</span>
+                                <span data-page-lang="mr">सपोर्ट तिकीट उघडा</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Raise Ticket Form (Hidden by default) -->
+                    <div id="ticketForm" class="hidden animate-fadeIn">
+                        <h6 class="text-center text-skyblue font-bold border-b border-gray-600 pb-2 mb-4 uppercase">
+                            <span data-page-lang="en" class="show-lang">Raise a Ticket</span>
+                            <span data-page-lang="hi">टिकट उठाएं</span>
+                            <span data-page-lang="mr">तिकीट उघडा</span>
+                        </h6>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-[10px] text-gray-400 uppercase font-bold">
+                                    <span data-page-lang="en" class="show-lang">Issue Category</span>
+                                    <span data-page-lang="hi">समस्या श्रेणी</span>
+                                    <span data-page-lang="mr">समस्या श्रेणी</span>
+                                </label>
+                                <select id="ticketCategory"
+                                    class="w-full bg-gray-700 text-white p-2 text-sm rounded border border-gray-600 outline-none focus:border-skyblue">
+                                    <option value="login">Login Issue</option>
+                                    <option value="data">Data Inaccuracy</option>
+                                    <option value="gis">GIS Map Error</option>
+                                    <option value="other">Other Technical Issue</option>
+                                </select>
+                                <script>
+                                    // Localize ticket category options
+                                    document.addEventListener('DOMContentLoaded', () => {
+                                        const ticketCat = document.getElementById('ticketCategory');
+                                        const catMap = {
+                                            en: ["Login Issue", "Data Inaccuracy", "GIS Map Error", "Other Technical Issue"],
+                                            hi: ["लॉगिन समस्या", "डेटा अशुद्धि", "जीआईएस मानचित्र त्रुटि", "अन्य तकनीकी समस्या"],
+                                            mr: ["लॉगिन समस्या", "डेटा अयोग्यता", "GIS नकाशा त्रुटी", "इतर तांत्रिक समस्या"]
+                                        };
+                                        const prevSwitch = window.switchPageLanguage;
+                                        window.switchPageLanguage = function (lang) {
+                                            if (prevSwitch) prevSwitch(lang);
+                                            if (catMap[lang]) {
+                                                const options = ticketCat.options;
+                                                for (let i = 0; i < options.length; i++) {
+                                                    options[i].text = catMap[lang][i];
+                                                }
+                                            }
+                                        };
+                                    });
+                                </script>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-gray-400 uppercase font-bold">
+                                    <span data-page-lang="en" class="show-lang">Message Subject</span>
+                                    <span data-page-lang="hi">संदेश का विषय</span>
+                                    <span data-page-lang="mr">संदेशाचा विषय</span>
+                                </label>
+                                <input type="text" id="ticketSubject" placeholder="Brief subject..."
+                                    class="w-full bg-gray-700 text-white p-2 text-sm rounded border border-gray-600 outline-none focus:border-skyblue">
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-gray-400 uppercase font-bold">
+                                    <span data-page-lang="en" class="show-lang">Detailed Description</span>
+                                    <span data-page-lang="hi">विस्तृत विवरण</span>
+                                    <span data-page-lang="mr">तपशीलवार वर्णन</span>
+                                </label>
+                                <textarea id="ticketDesc" rows="3" placeholder="Explain the issue..."
+                                    class="w-full bg-gray-700 text-white p-2 text-sm rounded border border-gray-600 outline-none focus:border-skyblue"></textarea>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="switchTab('faqs')"
+                                    class="bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded flex-1 text-sm font-bold">
+                                    <span data-page-lang="en" class="show-lang">BACK</span>
+                                    <span data-page-lang="hi">पीछे</span>
+                                    <span data-page-lang="mr">मागे</span>
+                                </button>
+                                <button onclick="submitTicket()"
+                                    class="bg-skyblue hover:bg-blue-600 text-white py-2 px-4 rounded flex-1 text-sm font-bold">
+                                    <span data-page-lang="en" class="show-lang">SUBMIT</span>
+                                    <span data-page-lang="hi">जमा करें</span>
+                                    <span data-page-lang="mr">सबमिट करा</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Success Message (Hidden) -->
+                    <div id="ticketSuccess"
+                        class="hidden flex flex-col items-center justify-center h-full text-center space-y-4 py-10">
+                        <div
+                            class="w-16 h-16 bg-parrot text-darkblue rounded-full flex items-center justify-center text-3xl shadow-lg">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-parrot text-xl font-bold uppercase">Ticket Raised!</h4>
+                            <p class="text-white text-sm mt-2">Your Ticket ID is: <span id="newTicketId"
+                                    class="text-skyblue font-mono">#BP-2026-8842</span></p>
+                            <p class="text-gray-400 text-xs mt-1">Our support team will contact you within 48 hours.</p>
+                        </div>
+                        <button onclick="switchTab('faqs')"
+                            class="bg-lightsky text-darkblue py-2 px-6 rounded font-bold text-xs uppercase hover:bg-white transition-all">Return
+                            to FAQs</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer Stats Block -->
+            <div
+                class="footer-bgskyblue flex flex-col md:flex-row w-full md:w-[70%] justify-around gap-4 hidden lg:flex">
+                <!-- Item 1 -->
+                <div class="flex items-center max-w-[200px]">
+                    <img src="https://datalakeg.nhai.gov.in/nhai/image/footer/Total%20Length.svg"
+                        class="w-10 opacity-90" alt="Total Length">
+                    <div class="flex flex-col ml-3">
+                        <h4 class="text-2xl font-bold count" data-val="148560">0</h4>
+                        <h6 class="text-xs font-semibold leading-tight">
+                            <span data-page-lang="en" class="show-lang">TOTAL LENGTH<br>(KM)</span>
+                            <span data-page-lang="hi">कुल लंबाई<br>(किमी)</span>
+                            <span data-page-lang="mr">एकूण लांबी<br>(किमी)</span>
+                        </h6>
+                    </div>
+                </div>
+                <!-- Item 2 -->
+                <div class="flex items-center max-w-[200px]">
+                    <img src="https://datalakeg.nhai.gov.in/nhai/image/footer/Under%20Implementation(Km).svg"
+                        class="w-10 opacity-90" alt="Under Implementation">
+                    <div class="flex flex-col ml-3">
+                        <h4 class="text-2xl font-bold count" data-val="56780">0</h4>
+                        <h6 class="text-xs font-semibold leading-tight">
+                            <span data-page-lang="en" class="show-lang">UNDER IMPLEMENTATION (KM)</span>
+                            <span data-page-lang="hi">कार्यान्वयन के तहत (किमी)</span>
+                            <span data-page-lang="mr">अंमलबजावणी अंतर्गत (किमी)</span>
+                        </h6>
+                    </div>
+                </div>
+                <!-- Item 3 -->
+                <div class="flex items-center max-w-[200px]">
+                    <img src="https://datalakeg.nhai.gov.in/nhai/image/footer/Completed.svg" class="w-8 opacity-90"
+                        alt="Completed">
+                    <div class="flex flex-col ml-3">
+                        <h4 class="text-xl font-bold count" data-val="78900">0</h4>
+                        <h6 class="text-[10px] font-semibold leading-tight uppercase">
+                            <span data-page-lang="en" class="show-lang">Completed (KM)</span>
+                            <span data-page-lang="hi">पूरा हुआ (किमी)</span>
+                            <span data-page-lang="mr">पूर्ण झाले (किमी)</span>
+                        </h6>
+                    </div>
+                </div>
+                <!-- Item 4 -->
+                <div class="flex items-center max-w-[200px]">
+                    <img src="https://datalakeg.nhai.gov.in/nhai/image/footer/Balance.svg" class="w-10 opacity-90"
+                        alt="Balance">
+                    <div class="flex flex-col ml-3">
+                        <h4 class="text-2xl font-bold count" data-val="12880">0</h4>
+                        <h6 class="text-xs font-semibold leading-tight">
+                            <span data-page-lang="en" class="show-lang">BALANCE FOR AWARD (KM)</span>
+                            <span data-page-lang="hi">पुरस्कार के लिए शेष (किमी)</span>
+                            <span data-page-lang="mr">पुरस्कारासाठी शिल्लक (किमी)</span>
+                        </h6>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+    <!-- FAB Button -->
+    <div id="chatbot-fab" onclick="toggleChat()" title="Bharat Path Assistant">
+        <i class="fas fa-comments"></i>
+        <div class="cb-badge" id="cb-badge">1</div>
+    </div>
+
+    <!-- Chat Panel -->
+    <div id="chatbot-panel">
+        <div class="cb-header">
+            <div class="cb-avatar"><i class="fas fa-robot"></i></div>
+            <div class="cb-header-info">
+                <h3>Bharat Path Assistant</h3>
+                <p><span class="cb-online-dot"></span> Online &bull; Replies instantly</p>
+            </div>
+            <span class="cb-close" onclick="toggleChat()"><i class="fas fa-times"></i></span>
+        </div>
+
+        <div id="cb-messages"></div>
+
+        <div id="cb-chips">
+            <span class="cb-chip" onclick="askChip(this)">
+                <span data-page-lang="en" class="show-lang">What is Bharat Path?</span>
+                <span data-page-lang="hi">भारत पथ क्या है?</span>
+                <span data-page-lang="mr">भारत पथ काय आहे?</span>
+            </span>
+            <span class="cb-chip" onclick="askChip(this)">
+                <span data-page-lang="en" class="show-lang">How to login?</span>
+                <span data-page-lang="hi">लॉगिन कैसे करें?</span>
+                <span data-page-lang="mr">लॉगिन कसे करावे?</span>
+            </span>
+        </div>
+
+        <div id="cb-input-row">
+            <input id="cb-input" type="text" placeholder="Type your question..."
+                onkeydown="if(event.key==='Enter') sendMessage()">
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const cbInput = document.getElementById('cb-input');
+                    const cbPlaceholders = {
+                        en: "Type your question...",
+                        hi: "अपना प्रश्न टाइप करें...",
+                        mr: "तुमचा प्रश्न टाइप करा..."
+                    };
+                    const oldSwitch2 = window.switchPageLanguage;
+                    window.switchPageLanguage = function (lang) {
+                        if (oldSwitch2) oldSwitch2(lang);
+                        if (cbPlaceholders[lang]) cbInput.placeholder = cbPlaceholders[lang];
+                    };
+                });
+            </script>
+            <button id="cb-send" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- Scripts for Tab Switching and Counting Animation -->
+    <script>
+        function switchTab(tabId) {
+            // Hide all potential views in the dynamic pane
+            const views = ['faqs', 'ticketForm', 'ticketSuccess'];
+            views.forEach(v => {
+                const el = document.getElementById(v);
+                if (el) {
+                    el.classList.add('hidden');
+                    el.classList.remove('block');
+                }
+            });
+
+            // Show Target View
+            const target = document.getElementById(tabId);
+            if (target) {
+                target.classList.remove('hidden');
+                target.classList.add('block');
+            }
+
+            // Keep the only tab button active
+            const buttons = document.querySelectorAll('.tab-btn');
+            if (buttons.length > 0) buttons[0].classList.add('active');
+        }
+
+        function showTicketForm() {
+            document.getElementById('faqs').classList.add('hidden');
+            document.getElementById('ticketForm').classList.remove('hidden');
+        }
+
+        function submitTicket() {
+            const cat = document.getElementById('ticketCategory').value;
+            const sub = document.getElementById('ticketSubject').value;
+            const desc = document.getElementById('ticketDesc').value;
+
+            if (!sub || !desc) {
+                alert("Please fill in both Subject and Description.");
+                return;
+            }
+
+            // Generate fake ID
+            const id = "BP-" + Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('newTicketId').innerText = "#" + id;
+
+            // Show Success
+            document.getElementById('ticketForm').classList.add('hidden');
+            document.getElementById('ticketSuccess').classList.remove('hidden');
+
+            // Clear inputs
+            document.getElementById('ticketSubject').value = "";
+            document.getElementById('ticketDesc').value = "";
+        }
+
+        // Animate count up for footer stats
+        document.addEventListener("DOMContentLoaded", () => {
+            const counters = document.querySelectorAll('.count');
+            const speed = 200; // The lower the slower
+
+            counters.forEach(counter => {
+                const animate = () => {
+                    const value = +counter.getAttribute('data-val');
+                    const data = +counter.innerText.replace(/,/g, '');
+
+                    const time = value / speed;
+                    if (data < value) {
+                        counter.innerText = Math.ceil(data + time).toLocaleString();
+                        setTimeout(animate, 20);
+                    } else {
+                        counter.innerText = value.toLocaleString();
+                    }
+                }
+
+                // Add tiny delay before starting animation
+                setTimeout(animate, 500);
+            });
+        });
+
+        // Handle Login Redirection
+        // Refresh Captcha
+        function refreshCaptcha() {
+            const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            let captcha = "";
+            for (let i = 0; i < 6; i++) {
+                captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById('captchaDisplay').innerText = captcha;
+            document.getElementById('captchaInput').value = "";
+        }
+
+        function handleResetPassword() {
+            const email = prompt("Please enter your registered email address to receive a password reset link:");
+            if (email) {
+                if (email.includes("@")) {
+                    alert("A password reset link has been sent to " + email + ". Please check your inbox.");
+                } else {
+                    alert("Invalid email address. Please try again.");
+                }
+            }
+        }
+
+        function handleLogin() {
+            const role = document.querySelector('select').value;
+            const user = document.getElementById('userName').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            const captchaInput = document.getElementById('captchaInput').value.trim();
+            const actualCaptcha = document.getElementById('captchaDisplay').innerText;
+
+            if (!role) { alert("Please select a User Role"); return; }
+            if (captchaInput !== actualCaptcha) {
+                alert("Incorrect Captcha. Please try again.");
+                refreshCaptcha();
+                return;
+            }
+
+            if (role) {
+                // In this demo, any input or no input is allowed if role and captcha are correct
+                window.location.href = "inner_dashboard.html";
+            } else {
+                alert("Please specifically select a User Role to proceed.");
+            }
+        }
+
+        // ========= CHATBOT ENGINE =========
+        const knowledgeBase = [
+            { keys: ['what is bharat path', 'what is nhai bharat path', 'about bharat path', 'purpose', 'what is this website'], answer: '📊 <b>Bharat Path</b> is the advanced digital repository and project management system.<br><br><b>Key Features:</b><br>1. Tracks project progress and financials.<br>2. Integrates GIS mapping for geographic insights.<br>3. Monitors contractor performance.<br>4. Generates automated alerts for deviations.' },
+            { keys: ['login', 'sign in', 'how to login', 'user role', 'credentials'], answer: '🔑 <b>Steps to Login:</b><br>1. Click on the <b>User Role</b> dropdown and select your role (e.g., HQ, RO, PIU, Guest).<br>2. Enter your registered <b>Username</b> and <b>Password</b>.<br>3. Look at the <b>CAPTCHA</b> code displayed and type it into the input field.<br>4. Click the <b>SIGN IN</b> button to access the dashboard.<br><i>Note: For testing, select "Guest" and you can skip entering credentials.</i>' },
+            { keys: ['total highway length', 'total length', 'highway length', 'km', 'total highway'], answer: '🛣️ <b>Highway Length Statistics:</b><br>• <b>Total Length:</b> 1,48,560 km<br>• <b>Under Implementation:</b> 56,780 km<br>• <b>Completed:</b> 78,900 km<br>• <b>Balance for Award:</b> 12,880 km<br><br><b>Action:</b> Scroll to the bottom footer of the login page to see these statistics updated in real-time.' },
+            { keys: ['raise ticket', 'how to raise a ticket', 'support ticket', 'issue', 'complaint'], answer: '🎫 <b>Steps to Raise a Ticket:</b><br>1. On the login page, look at the right-side notification panel.<br>2. Click the green <b>"RAISE A SUPPORT TICKET"</b> button at the bottom of the FAQs list.<br>3. Select the <b>Issue Category</b> (e.g., Login Issue, Data Inaccuracy).<br>4. Enter a brief <b>Message Subject</b> and a <b>Detailed Description</b> of your issue.<br>5. Click <b>SUBMIT</b>. You will receive a Ticket ID for tracking.' },
+            { keys: ['monthly update deadline', 'deadline', 'due date', 'monthly update', 'update data'], answer: '📅 <b>Monthly Data Update Deadline:</b><br>All PDs, ROs, HQ, and CGMs are mandated to complete their project data updates by the <b>7th calendar day of every month</b>.<br><br><b>Action:</b> Make sure to log in before the 7th and submit all financial and physical progress updates through your respective project modules to avoid system-generated penalty alerts.' },
+            { keys: ['dashboard', 'dashboard overview', 'performance', 'overview tab', 'charts', 'progress vs target'], answer: '📊 <b>Using the Dashboard Overview:</b><br>1. Navigate to <b>Dashboard Overview</b> on the left sidebar (inner portal).<br>2. View the top KPIs to quickly check Active Projects and Km completed.<br>3. Hover over the <b>"Construction Progress"</b> bar chart to see monthly target vs actuals.<br>4. Check the <b>"Cost Variances"</b> doughnut chart to see budget distribution.' },
+            { keys: ['project reports', 'report', 'download report', 'export', 'pdf', 'excel'], answer: '📄 <b>Steps to Download Reports:</b><br>1. Log in and navigate to <b>Project Reports</b> from the left sidebar.<br>2. Use the search bar to find a specific project, or click the filter buttons (Monthly, Quarterly, Annual).<br>3. Click the eye icon (<b>View</b>) to see a quick summary modal.<br>4. Click the download icon (<b>PDF</b>) next to the project to export the full report to your device.' },
+            { keys: ['forgot password', 'reset password', 'password reset'], answer: '🔒 <b>Steps to Reset Password:</b><br>1. On the login page, click the blue <b>"Reset Password?"</b> link.<br>2. A prompt will appear asking for your registered email address.<br>3. Enter your email and click OK.<br>4. Check your email inbox for the secure reset link and follow the instructions to create a new password.' },
+            { keys: ['alerts', 'deviations', 'critical alerts', 'high severity', 'issues'], answer: '⚠️ <b>Managing Alerts & Deviations:</b><br>1. Go to the <b>Alerts & Deviations</b> section on the sidebar.<br>2. Review the color-coded alerts (Red for Critical, Yellow for Warning).<br>3. For any critical alert, click the <b>"Take Action"</b> button to view the root cause (e.g., LA Delay) and submit a mitigation plan to your reporting officer.' },
+            { keys: ['financials', 'budget', 'money allocated', 'disbursement', 'claims', 'finance'], answer: '💰 <b>Viewing Financials:</b><br>1. Navigate to the <b>Financials</b> tab on the left sidebar.<br>2. You can view the Total Budget Allocated (₹1,45,000 Cr) and Funds Disbursed.<br>3. To review unpaid claims, check the <b>"Pending Claims"</b> card which shows amount awaiting processing.' },
+            { keys: ['gis map', 'map viewer', 'layers', 'wms', 'toll plaza'], answer: '🗺️ <b>Using the GIS Map Viewer:</b><br>1. Click on <b>GIS Map Viewer</b> in the left sidebar.<br>2. Wait a moment for the WMS connection to establish.<br>3. In the map overlay, toggle the specific layers you want to see by clicking the badges: <b>Expressways</b>, <b>National Highways</b>, or <b>Toll Plazas</b>.' },
+            { keys: ['contractor metrics', 'contractor ranking', 'top agency', 'performance'], answer: '👷 <b>Checking Contractor Metrics:</b><br>1. Open the <b>Contractor Metrics</b> page from the sidebar.<br>2. You will see a list of Top Performing Agencies ranked by Quality Score.<br>3. Look at the progress bars to quickly compare the schedule adherence and quality percentage of agencies like L&T, Tata Projects, and Dilip Buildcon.' },
+            { keys: ['hello', 'hi', 'hey', 'greetings', 'good morning', 'good afternoon'], answer: '👋 <b>Hello!</b> I am your Bharat Path Assistant.<br>I can guide you step-by-step through our portal. You can ask me how to login, how to raise a ticket, check deadlines, or navigate the dashboard features. What can I help you with today?' },
+            { keys: ['thank', 'thanks', 'bye', 'goodbye'], answer: '😊 You\'re very welcome! If you need step-by-step instructions for any other feature in the Bharat Path portal, just let me know. Goodbye!' }
+        ];
+
+        const defaultAnswer = `🤔 <b>I'm not exactly sure what you're asking.</b><br><br>I can provide step-by-step instructions for:<br>• <b>Login & Access</b>: How to login, reset password<br>• <b>Support</b>: How to raise a ticket<br>• <b>Portal Usage</b>: How to download reports, view GIS maps<br>• <b>Information</b>: What is Bharat Path, total highway lengths, or update deadlines<br><br>Please try rephrasing your question!`;
+
+        function findAnswer(input) {
+            const q = input.toLowerCase().replace(/[^\w\s]/g, '').trim();
+            let bestMatch = null;
+            let longestKey = 0;
+
+            for (const item of knowledgeBase) {
+                for (const k of item.keys) {
+                    const normalizedKey = k.toLowerCase().replace(/[^\w\s]/g, '').trim();
+                    if (normalizedKey && q.includes(normalizedKey) && normalizedKey.length > longestKey) {
+                        longestKey = normalizedKey.length;
+                        bestMatch = item.answer;
+                    }
+                }
+            }
+            return bestMatch || defaultAnswer;
+        }
+
+        let chatOpen = false;
+
+        function toggleChat() {
+            chatOpen = !chatOpen;
+            document.getElementById('chatbot-panel').classList.toggle('open', chatOpen);
+            document.getElementById('cb-badge').style.display = 'none';
+            if (chatOpen && document.getElementById('cb-messages').children.length === 0) {
+                setTimeout(() => {
+                    addBotMessage("👋 <b>Welcome!</b> I'm the Bharat Path Assistant. I can help you with login issues, project stats, and navigating the portal.<br><br>What can I help you with?");
+                }, 300);
+            }
+            if (chatOpen) setTimeout(() => document.getElementById('cb-input').focus(), 400);
+        }
+
+        function addBotMessage(text, delay = 0) {
+            const messages = document.getElementById('cb-messages');
+            const typing = document.createElement('div');
+            typing.className = 'cb-bubble bot cb-typing';
+            typing.innerHTML = '<span></span><span></span><span></span>';
+            messages.appendChild(typing);
+            messages.scrollTop = messages.scrollHeight;
+
+            setTimeout(() => {
+                typing.remove();
+                const bubble = document.createElement('div');
+                bubble.className = 'cb-bubble bot';
+                bubble.innerHTML = text;
+                messages.appendChild(bubble);
+                messages.scrollTop = messages.scrollHeight;
+            }, delay + 600);
+        }
+
+        function addUserMessage(text) {
+            const messages = document.getElementById('cb-messages');
+            const bubble = document.createElement('div');
+            bubble.className = 'cb-bubble user';
+            bubble.textContent = text;
+            messages.appendChild(bubble);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('cb-input');
+            const text = input.value.trim();
+            if (!text) return;
+            addUserMessage(text);
+            input.value = '';
+            const answer = findAnswer(text);
+            addBotMessage(answer, 200);
+        }
+
+        function askChip(el) {
+            const text = el.textContent.trim();
+            addUserMessage(text);
+            const answer = findAnswer(text);
+            addBotMessage(answer, 200);
+        }
+        function switchPageLanguage(lang) {
+            const elements = document.querySelectorAll('[data-page-lang]');
+            elements.forEach(el => {
+                if (el.getAttribute('data-page-lang') === lang) {
+                    el.classList.add('show-lang');
+                } else {
+                    el.classList.remove('show-lang');
+                }
+            });
+            // Update select dropdown value to match current lang
+            document.getElementById('globalLangSelector').value = lang;
+            // Persist language choice
+            localStorage.setItem('bharatPathLang', lang);
+        }
+
+        // Initialize with default or persisted language
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('bharatPathLang') || 'en';
+            switchPageLanguage(savedLang);
+        });
+    </script>
+</body>
+
+</html>
