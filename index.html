@@ -142,8 +142,8 @@
         /* --- CHATBOT STYLES --- */
         #chatbot-fab {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 10px;
+            right: 15px;
             width: 60px;
             height: 60px;
             background: linear-gradient(135deg, #007ACC, #005a99);
@@ -541,7 +541,7 @@
             <div class="flex items-center">
                 <img src="./images/bharat_path_logo.png" alt="Bharat Path Logo"
                     class="w-[120px] md:w-[150px] object-contain">
-                <span class="ml-4 font-bold text-darkblue text-lg hidden lg:block">
+                <span class="ml-4 font-bold text-darkblue text-lg hidden lg:block whitespace-nowrap">
                     <span data-page-lang="en" class="show-lang">Bharat Path Portal</span>
                     <span data-page-lang="hi">भारत पथ पोर्टल</span>
                     <span data-page-lang="mr">भारत पथ पोर्टल</span>
@@ -652,7 +652,7 @@
         <marquee onmouseover="this.stop();" onmouseout="this.start();" class="mt-0.5 mb-0.5 text-center block w-full">
             <span class="marquee-text font-bold text-sm">
                 <i class="far fa-hand-point-right"></i>
-                <a href="info.html?target=about" class="hover:underline">
+                <a href="javascript:void(0)" onclick="showAboutInfo()" class="hover:underline">
                     <span data-page-lang="en" class="show-lang">What is Bharat Path ?</span>
                     <span data-page-lang="hi">भारत पथ क्या है?</span>
                     <span data-page-lang="mr">भारत पथ काय आहे?</span>
@@ -1293,6 +1293,19 @@
             document.getElementById('globalLangSelector').value = lang;
             // Persist language choice
             localStorage.setItem('bharatPathLang', lang);
+        }
+
+        function showAboutInfo() {
+            if (!chatOpen) toggleChat();
+            setTimeout(() => {
+                const aboutText = {
+                    en: "📊 <b>Bharat Path</b> is the advanced digital repository and project management system designed to track highway project progress, financials, and performance metrics in real-time.",
+                    hi: "📊 <b>भारत पथ</b> एक उन्नत डिजिटल रिपॉजिटरी और परियोजना प्रबंधन प्रणाली है जिसे वास्तविक समय में राजमार्ग परियोजना की प्रगति, वित्तीय और प्रदर्शन मेट्रिक्स को ट्रैक करने के लिए डिज़ाइन किया गया है।",
+                    mr: "📊 <b>भारत पथ</b> हे प्रगत डिजिटल रिपॉजिटरी आणि प्रकल्प व्यवस्थापन प्रणाली आहे जी महामार्ग प्रकल्पाची प्रगती, आर्थिक आणि कामगिरी मेट्रिक्स रिअल-टाइममध्ये ट्रॅक करण्यासाठी डिझाइन केलेली आहे."
+                };
+                const lang = localStorage.getItem('bharatPathLang') || 'en';
+                addBotMessage(aboutText[lang] || aboutText['en']);
+            }, 600);
         }
 
         // Initialize with default or persisted language
